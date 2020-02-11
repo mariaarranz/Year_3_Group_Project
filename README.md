@@ -1,2 +1,19 @@
-# Year_3_Group_Project
-This is the Year 3 group project
+# Code Function
+This repository is separated into various folders. Each folder executes a task needed for the group project as a whole, whether it is plot generation, data, etc.
+
+In each folder, you will find the README.md file that will give instructions and requirements for the specific code.
+
+## Background Knowledge
+
+## Languages Used
+
+So far, the languages that have been used in the execution of this code are: python and R(reference)
+
+## General Requirements
+
+## Warnings
+
+## References
+
+## Authors
+Maria Arranz Fombellida, Cerys Barclay, Marianne Buat, Sophie Fretwell, Amelia Nakimuli, Callum Parr, Ruben Weitzman.
