@@ -3,13 +3,13 @@ This repository is separated into various folders. Each folder executes a task n
 
 In each folder, you will find the README.md file that will give instructions and requirements for the specific code.
 
-## Background Knowledge
+## Background Knowledge :books:
 
-## Languages Used
+## Languages Used :computer:
 
 So far, the languages that have been used in the execution of this code are: ***python*** and R(reference)
 
-## General Requirements
+### General Requirements 
 Pandas
 ```
   pip install pandas
@@ -25,7 +25,7 @@ Biopython
 
 ## Warnings :warning:
 
-## References
+## References :file_folder:
 
-## Authors
+## Authors :pencil:
 Maria Arranz Fombellida, Cerys Barclay, Marianne Buat, Sophie Fretwell, Amelia Nakimuli, Callum Parr, Ruben Weitzman.
