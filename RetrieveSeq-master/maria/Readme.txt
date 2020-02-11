@@ -1,3 +1,0 @@
-This code was originally made by Maria...
-
-Can be used for functions like the calculation of RSCU values, or creating an excel file with the codon table.
