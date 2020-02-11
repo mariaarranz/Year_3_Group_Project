@@ -7,7 +7,7 @@ In each folder, you will find the README.md file that will give instructions and
 
 ## Languages Used
 
-So far, the languages that have been used in the execution of this code are: python and R(reference)
+So far, the languages that have been used in the execution of this code are: ***python*** and R(reference)
 
 ## General Requirements
 
