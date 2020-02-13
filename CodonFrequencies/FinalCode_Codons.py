@@ -3,147 +3,63 @@
 Year 3 Project: Codons
 Code to extract protein ID from table and 
 retrieve the cds's from the Ensembl server.
-
 Careful: loops through whole table so only use once on college computer!
-
 Created on Mon Dec  9 17:54:22 2019
-
-@author: Marianne Buat, Maria Arranz
+@author: Marianne Buat
 """
-
-
-"""
-First part (already run to generate renamed output "CDSOutput.xlsx"):
-Retrieve gene ID in table EV1 from Wang et al (2019),
-and from gene ID recover CDS's from Ensembl server.
-
-"""
-
-""" #Block comment because no need to run, for information only
-
-
 #import relevant libraries
+
 import pandas as pd
 import requests, sys #to communicate with Ensembl servers
 import json 
 
-def ensemblGETrequest(ID, server = "https://rest.ensembl.org", partial_ext="", addi_ext = "" ):
-    ext = partial_ext+ID+"?"+addi_ext
-    while "Repeat the same request":
-        try:
-            r = requests.get(server+ext, headers={ "Content-Type" : "application/json"},timeout=100)
-            r.raise_for_status()
-        except (requests.exceptions.HTTPError,requests.exceptions.Timeout) as e: 
-            print(e)
-            return "error"
-        else:
-            #print("Successfully decoded")
-            decoded=r.json()
-            #print(repr(decoded)) #for testing 
-            return decoded #return with result if successful
+xls_file = pd.ExcelFile('Table_EV1.xlsx') # Import the excel file and call it xls_file
+df = xls_file.parse('C. Genes') #import into pandas only one of the sheets  
 
-#Standard format of request to send to Ensembl, just changing ID each time
-#Example: https://rest.ensembl.org/sequence/id/ENSG00000000003?species=human;type=cds;multiple_sequences=1
+db_len = len(df)
+#Create an output dataframe with only the parts we are interested in
+geneIDs = df.get('Gene ID')
+CDS=pd.Series([]) #Create new series to contain the sequences, will then be added to output dataframe
+actualID=pd.Series([])
+
+maxQueryLen = 10 #actually 50
 server = "https://rest.ensembl.org"
-GETseq_ext="/sequence/id/"
-GETseq_addi_ext = "species=human;type=cds;multiple_sequences=1"
+ext = "/sequence/id"
+headers={ "Content-Type" : "application/json", "Accept" : "application/json","type":'cds'}
 
 
-#Import data from Excel sheets
-#genes=pd.read_excel('Table_EV1.xlsx', sheet_name = 'C. Genes') # Import sheet "C. Genes" from excel file 
-#outputDF = pd.DataFrame({'Gene_ID':genes.get('Gene ID'),'transcript_ID':pd.Series([]),'CDS':pd.Series([]), 'Liver_abundance':genes.get('Liver')})
-outputDF=pd.read_excel('CDSFromGeneID.xlsx',index_col=0) #import pre-existing output file
+#Loop through huge table to retrieve all sequences
+ind = 0
+#while ind+maxQueryLen<=db_len:
+gene_ids = geneIDs[ind:ind+maxQueryLen+1] #select 50 IDs from table
+id_list=gene_ids.values.tolist() #convert dataframe slice to list
+ #convert to json string for compatibility (could also have used str())
 
-# The ID 'ENST00000370378' at index 924 of sheet "C. Genes" is discontinued in the Ensembl database
-#dec=ensemblGETrequest('ENST00000370378',server, GETseq_ext,GETseq_addi_ext)
-#outputDF.loc[924,'Gene_ID']='ENSG00000189195'
-#outputDF.loc[924,'CDS']=dec[0]['seq']
-#outputDF.loc[924,'transcript_ID']=dec[0]['id']
+inputData = json.dumps({'ids':id_list,'type':['cds']*len(id_list)}) #dictionary with ids and output type cds for all; 
 
-#indstop=8873 #last successful query or saved output
-plante = []
-#Loop until reach end
-for ind in range(indstop,indstop+1000):
-    ID = outputDF.loc[ind,'Gene_ID']
-    decoded=ensemblGETrequest(ID,server, GETseq_ext,GETseq_addi_ext) #get sequences from server
-    if decoded == "error":
-        plante.append(ind)
-        print("{}: error for query: {}".format(ind,ID))
-    else:
-        outputDF.loc[ind,'CDS']=decoded[0]['seq']
-        outputDF.loc[ind,'transcript_ID']=decoded[0]['id']
-    
-        print("{}. Query: {}, ID: {}".format(ind,ID,decoded[0]['id']))
-        #print("CDS: {}".format(decoded[0]['seq'])) #for testing
-    indstop=ind
+r = requests.post(server+ext, headers=headers, data=inputData) #request data from server        
+if not r.ok:
+  r.raise_for_status()
+  sys.exit()
+ 
+decoded = r.json() #read response from server
+#decoded is a list of dictionaries
+for k in range(len(id_list)):
+ CDS[ind+k] = decoded[k]['seq'] #store the retrieved sequences
+ actualID[ind+k] = decoded[k]['id']
 
+#Create an output dataframe for the results
 
-#Save to file
-writer = pd.ExcelWriter('CDSFromGeneID.xlsx')
-outputDF.to_excel(writer)
-writer.save()
-print('Output written successfully to Excel File.')
+outputDF = pd.DataFrame({'Gene ID':geneIDs,'answer ID':actualID,'CDS':CDS})
+print(outputDF.head())                                                                
 
-################
-for ind in range(indstop,indstop+1000):
-    ID = outputDF.loc[ind,'Gene_ID']
-    decoded=ensemblGETrequest(ID,server, GETseq_ext,GETseq_addi_ext) #get sequences from server
-    if decoded == "error":
-        plante.append(ind)
-        print("{}: error for query: {}".format(ind,ID))
-    else:
-        outputDF.loc[ind,'CDS']=decoded[0]['seq']
-        outputDF.loc[ind,'transcript_ID']=decoded[0]['id']
+# #Save to file
+# writer = pd.ExcelWriter('CDSQueryOutput.xlsx')
+# outputDF.to_excel(writer)
+# writer.save()
+# print('Output is written successfully to Excel File.')
 
-        print("{}. Query: {}, ID: {}".format(ind,ID,decoded[0]['id']))
-        #print("CDS: {}".format(decoded[0]['seq'])) #for testing
-    indstop=ind
-
-
-#Save to file
-writer = pd.ExcelWriter('CDSFromGeneID.xlsx')
-outputDF.to_excel(writer)
-writer.save()
-print('Output written successfully to Excel File.')
-
-
-################
-for ind in range(indstop,len(outputDF)):
-    ID = outputDF.loc[ind,'Gene_ID']
-    decoded=ensemblGETrequest(ID,server, GETseq_ext,GETseq_addi_ext) #get sequences from server
-    if decoded == "error":
-        plante.append(ind)
-        print("{}: error for query: {}".format(ind,ID))
-    else:
-        outputDF.loc[ind,'CDS']=decoded[0]['seq']
-        outputDF.loc[ind,'transcript_ID']=decoded[0]['id']
-
-        print("{}. Query: {}, ID: {}".format(ind,ID,decoded[0]['id']))
-        #print("CDS: {}".format(decoded[0]['seq'])) #for testing
-    indstop=ind
-
-#Save to file
-writer = pd.ExcelWriter('CDSFromGeneID.xlsx')
-outputDF.to_excel(writer)
-writer.save()
-print('Output written successfully to Excel File.')
-
-print('list of failed indexes:')
-print(plante)
-
-
-##End of 1st part
-"""
-
-##############################################################################################
-    
-
-##############################################################################################
-"""
-Second part: calculate codon usage of coding sequences of genes.
-Uses (renamed) output from 1st part of the code "CDSOutput.xlsx" 
-"""
-
+##
 #code for CodonTable fonction 
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
@@ -181,6 +97,7 @@ import pandas as pd
 import requests, sys #to communicate with Ensembl servers
 import json 
 
+
 xls_file = pd.ExcelFile('CDSOutput.xlsx') # Import the excel file and call it xls_file
 df = xls_file.parse() #import into pandas dataframe object  
 
@@ -198,17 +115,18 @@ for i in range(len(gene_ids)):
 df_merge_col = pd.merge(df, output, left_index=True, right_index=True)# use merge method, not join to add with respect to rows
 df_merge_col.to_excel('CodonTable.xlsx',index=False)#use this method to save to csv, traditinal format, better than excel
 
+
 #ADD RSCU SHEET TO EXCEL FILE
-from openpyxl import load_workbook #to work on the excel file
+from openpyxl import load_workbook
 from decimal import Decimal
 
 wb = load_workbook('CodonTable.xlsx')
 
-ws2 = wb.create_sheet("Sheet_RSCU", 1)  # create new sheet for RSCU values
+ws2 = wb.create_sheet("Sheet_RSCU", 1)
 ws2.title = "RSCU"
 
 ws1 = wb.worksheets[0]
-ws1.title = "Codon Frequencies" # rename first sheet
+ws1.title = "Codon Frequencies" 
 
 # calculate total number of rows and  
 # columns in source excel file 
@@ -252,7 +170,7 @@ for i in range (1, mr + 1):
         c_val = c.value
         h_val = h.value
         
-        ws2.cell(row = i, column = j).value = c.value # copy all cells ws1 to ws2
+        ws2.cell(row = i, column = j).value = c.value 
         
         #RSCU values are CodonCount/((1/num of synonymous codons) * sum of all synonymous codons)
         if (i>1) and (j>5):
@@ -286,8 +204,7 @@ for i in range (1, mr + 1):
                     r = Decimal(count/denominator)
                 result = round(r,2)
                 rscu[s] = result
-    
-    # reorganize RSCU values for codons in alphabetical order
+        
     final_rscu = {}
     for key in codon_dict:
         value = rscu.get(key)
@@ -309,7 +226,6 @@ for i in range (1, mr + 1):
 
 wb.save(filename = 'CodonTable.xlsx')
 ####
-
 ## Calculate CAI value from CAI package
 from CAI import CAI
 from Bio import SeqIO # to parse FASTA files
@@ -317,7 +233,7 @@ from Bio import SeqIO # to parse FASTA files
 ws3 = wb.create_sheet("Sheet_CAI", 2)
 ws3.title = "CAI"
 
-ws3.cell(row = 1, column = 5).value = "CAI" # create header for new column
+ws3.cell(row = 1, column = 5).value = "CAI"
 
 # calculate total number of rows and  
 # columns in source excel file 
@@ -335,10 +251,11 @@ for i in range (1, mr + 1):
         h = ws1.cell(row = 1, column = j)
 
         c_val = c.value
+        h_val = h.value
         
-        ws3.cell(row = i, column = j).value = c.value #copy only first 4 columns (up to CDS)
+        ws3.cell(row = i, column = j).value = c.value 
         
-        if (j == 4) and (i!=1): # create values of cai from cds cells
+        if (j == 4) and (i!=1):
             sequence = c_val
             reference = [seq.seq for seq in SeqIO.parse("reference.fasta", "fasta")]
             if 'N' in sequence:
@@ -348,6 +265,6 @@ for i in range (1, mr + 1):
                 cai = ' '
             else:
                 cai = CAI(sequence, reference=reference)
-            ws3.cell(row = i, column = j+1).value = cai #write cai values in new column
+            ws3.cell(row = i, column = j+1).value = cai
 
-wb.save(filename = 'CodonTable.xlsx') #save the updated file
+wb.save(filename = 'CodonTable.xlsx')

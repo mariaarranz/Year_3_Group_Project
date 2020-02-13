@@ -79,9 +79,9 @@ outputDF = pd.DataFrame({'Gene ID':geneIDs,'answer ID':actualID,'CDS':CDS, 'Live
 #print(outputDF.head())                                                                
 
 #Save to file
-writer = pd.ExcelWriter('CDSOutput.xlsx')
-outputDF.to_excel(writer)
-writer.save()
+#writer = pd.ExcelWriter('CDSOutput.xlsx')
+#outputDF.to_excel(writer)
+#writer.save()
 #print('Output is written successfully to Excel File.')
 
 ##
