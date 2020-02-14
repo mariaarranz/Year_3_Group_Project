@@ -72,7 +72,6 @@ def CodonTable (my_seq):
 
 #print(CodonTable(my_seq))
 
-
 xls_file = pd.ExcelFile('PTRdata.xlsx') # Import the excel file and call it xls_file
 df = xls_file.parse() #import into pandas dataframe object  
 
@@ -89,6 +88,7 @@ for i in range(len(gene_ids)):
 df_merge_col = pd.merge(df, output, left_index=True, right_index=True)# use merge method, not join to add with respect to rows
 df_merge_col.to_excel('PTRdata.xlsx',index=False)#use this method to save to csv, traditinal format, better than excel
 
+#############################################################################################################
 #ADD PTR-AI SHEET TO EXCEL FILE
 from openpyxl import load_workbook
 from decimal import Decimal
@@ -134,7 +134,7 @@ for i in range (1, mr + 1):
 wb.save(filename = 'PTRdata.xlsx')
 
 ###########################################################################################################
-# Create BoxPlot for PTR-AI values of Codons
+# CREATE BOXPLOT DATA FOR FIGURE
 import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 import numpy as np
@@ -168,6 +168,8 @@ for j in range (7, mc + 1):
     # Adding a new key value pair
     dic.update( {name : ls} )
 
+############################################################################################
+## GENERATE BOXPLOT FROM DATA
 # split dictionary into keys and values 
 keys = [] 
 values = [] 
