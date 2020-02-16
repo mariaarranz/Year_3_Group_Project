@@ -13,10 +13,11 @@ This code includes two python files:
 ## Background Knowledge and Equations
 From reading the article: *Quantification and discovery of sequence determinants of protein‐per‐mRNA amount in 29 human tissues (Eraslan, B, et.al)*
 
-PTR = protein-ot-mRNA ratio = *log10(normalised protein levels/normalised mRNA levels)* - [Click here to see PTR values for liver](PTR_liver.xlsx)
+PTR = protein-ot-mRNA ratio -  [Click here to see PTR values for liver](PTR_liver.xlsx)
+  - PTR = *log10(normalised protein levels/normalised mRNA levels)*
 
 PTR-AI = PTR ratio fold-change associated with doubling the frequency of a codon in a gene.
-  - PTR-AI = 10^log2(frequency of codon)
+  - PTR-AI = *10^log2(frequency of codon)*
 
 ## Understanding of Results
 As expected, the results from the [**PTR-AI values vs Codons Box PLot**](Figures/Box_plot.png) will show a similar analysis as that of the article: *Quantification and discovery of sequence determinants of protein‐per‐mRNA amount in 29 human tissues (Eraslan, B, et.al)*. 
