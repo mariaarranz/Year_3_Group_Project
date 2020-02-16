@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
+############################################################################################
+# CALCULATE FREQUENCIES FOR CODONS IN SEQUENCES
+############################################################################################
+
 #import relevant libraries
 import pandas as pd
-import requests, sys #to communicate with Ensembl servers
 import json 
-
-# importing openpyxl module 
 import openpyxl as xl; 
   
 # opening the source excel file 
@@ -77,7 +77,7 @@ df = xls_file.parse() #import into pandas dataframe object
 
 db_len = len(df)
 
-gene_ids = df.get('CDS_Sequence')#only the CDS column
+gene_ids = df.get('CDS_Sequence')#only the CDS_Sequence column
 output = pd.DataFrame()#empt7 df
 for i in range(len(gene_ids)):
     seq = gene_ids[i]
@@ -90,6 +90,8 @@ df_merge_col.to_excel('PTRdata.xlsx',index=False)#use this method to save to csv
 
 #############################################################################################################
 #ADD PTR-AI SHEET TO EXCEL FILE
+#############################################################################################################
+
 from openpyxl import load_workbook
 from decimal import Decimal
 import math
@@ -122,9 +124,9 @@ for i in range (1, mr + 1):
 
         if (j > 6) and (i!=1):
             freq = c_val
-            if c_val == 0:
+            if c_val == 0: #If there is no codon in sequence, ptr-ai = 0
                 ptrai = 0
-            else:
+            else: # calculate PTR-AI values with equation: 10^log2(frequency)
                 exp = math.log2(freq)
                 r = math.pow(10, exp)
                 result = math.log10(r)
@@ -135,6 +137,8 @@ wb.save(filename = 'PTRdata.xlsx')
 
 ###########################################################################################################
 # CREATE BOXPLOT DATA FOR FIGURE
+###########################################################################################################
+
 import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 import numpy as np
@@ -156,27 +160,32 @@ for j in range (7, mc + 1):
     h = ws.cell(row = 1, column = j)
     h_val = h.value
 
-    name = h_val
+    name = h_val #get name of corresponding codon
 
     for i in range (2, mr + 1): 
         # reading cell value from source excel file 
         c = ws.cell(row = i, column = j)
         c_val = c.value
         
-        ls.append(c_val)
+        ls.append(c_val) # input the data for each codon in a new list
 
-    # Adding a new key value pair
-    dic.update( {name : ls} )
+    # Adding a new key value pair (dictionary of key = codon name; value = ptr-ai values list)
+    dic.update( {name : ls} ) 
 
 ############################################################################################
 ## GENERATE BOXPLOT FROM DATA
+############################################################################################
+
 # split dictionary into keys and values 
 keys = [] 
 values = [] 
-items = dic.items() 
+items = dic.items()
+
 for item in items: 
     keys.append(item[0]), values.append(item[1])
 
+# set ptr-ai values as values for the figure, and names of codons as the labels in x-axis
+# remove outliers to make figure clearer
 box_plot_data = values
 plt.boxplot(box_plot_data, showfliers=False, patch_artist=True, labels = keys)
 plt.rcParams["figure.figsize"] = (30, 8)

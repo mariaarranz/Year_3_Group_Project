@@ -2,11 +2,10 @@
 
 ############################################################################################
 # CALCULATE THE POSITION OF THE SPECIFIED CODON IN THE SEQUENCES
+############################################################################################
 
 #import relevant libraries
 import pandas as pd
-import requests, sys #to communicate with Ensembl servers
-import json 
 import openpyxl as xl; 
 
 # opening the source excel file 
@@ -41,15 +40,16 @@ for i in range (1, mr + 1):
 # saving the destination excel file 
 wb2.save(str('Pos.xlsx'))
 
-#code for CodonTable fonction 
+#code for CodonPosition function 
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 my_seq = "GAUCGAUGGGCUUAUAUAGGAUCGAAAAUCGCA"
 
-aa = 'AAA'
+aa = 'AAA' # select codon to find data for
 def CodonPosition (my_seq):
     codons = []
     start = 0
+    # separate the sequences into a codons list
     for l in range(int(len(my_seq)/3)):
         end = start + 3
         codon = my_seq[start:end]
@@ -57,12 +57,13 @@ def CodonPosition (my_seq):
         start = end
     #print(codons)
     
+    # Find only the position of the selected codon
     if aa not in codons:
-        pos = '00'
+        pos = '00' #if not in sequence, output '00'
     else:
-        pos = codons.index(aa)
+        pos = codons.index(aa) #if in sequence, output the position on the list
 
-    PosDict = {aa: pos}
+    PosDict = {aa: pos} #create a dictionary for the codon and its positions
     
     return PosDict
 
@@ -73,7 +74,7 @@ df = xls_file.parse() #import into pandas dataframe object
 
 db_len = len(df)
 
-gene_ids = df.get('CDS_Sequence')#only the CDS column
+gene_ids = df.get('CDS_Sequence')#only the CDS_Sequence column
 output = pd.DataFrame()#empt7 df
 for i in range(len(gene_ids)):
     seq = gene_ids[i]
@@ -86,7 +87,7 @@ df_merge_col.to_excel('Pos.xlsx',index=False)#use this method to save to csv, tr
 
 ####################################################################################
 # GET PTR-AI DATA and GENERATE FIGURE
-#############################################################################################################
+####################################################################################
 #ADD PTR-AI SHEET TO EXCEL FILE
 from openpyxl import load_workbook
 from decimal import Decimal
@@ -98,7 +99,7 @@ ws2 = wb.create_sheet("Sheet_PTRAI", 1)
 ws2.title = "PTR-AI"
 
 ws1 = wb.worksheets[0]
-ws1.title = "Positions" 
+ws1.title = "Positions" #rename sheet 0
 
 wbP = load_workbook('PTRdata.xlsx')
 wsP = wbP.worksheets[1]
@@ -112,7 +113,8 @@ mc = ws1.max_column
 # excel file to destination excel file 
 for i in range (1, mr + 1): 
     for j in range (1, mc + 1): 
-        # reading cell value from source excel file 
+        # reading cell value from Pos.xlsx file 
+        # get postion data
         c = ws1.cell(row = i, column = j)
         h = ws1.cell(row = 1, column = j)
 
@@ -121,12 +123,15 @@ for i in range (1, mr + 1):
 
         ws2.cell(row = i, column = j).value = c.value
 
+        #get PTR-AI data from PTRdata.xlsx file
         cp = wsP.cell(row = i, column = j)
         hp = wsP.cell(row = 1, column = j)
         
         cP_val = cp.value
         hP_val = hp.value
 
+        # Create new sheet in Pos.xlsx file containing the PTR-AI values for 
+        # the selected codon
         if (j == 7) and (i != 1):
             if (hP_val == aa):
                 ws2.cell(row = i, column = j).value = cp.value
@@ -135,14 +140,16 @@ wb.save(filename = 'Pos.xlsx')
 
 #########################################################################################
 # CREATE DATA FOR FIGURE
+#########################################################################################
+
 import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 import numpy as np
 from matplotlib.patches import Polygon
 
 wb = load_workbook('Pos.xlsx')
-ws0 = wb.worksheets[0]
-ws1 = wb.worksheets[1]
+ws0 = wb.worksheets[0] # sheet containing postions
+ws1 = wb.worksheets[1] # sheet containing ptr-ai values
 
 # calculate total number of rows and  
 # columns in source excel file 
@@ -155,13 +162,13 @@ aa = 'AAA'
 pos_ls = []
 ptrai_ls = []
 for j in range (7, mc + 1): 
-    ls1 = []
+    ls1 = [] #create list of all positions
     for i in range (2, mr + 1): 
         # reading cell value from source excel file 
         c = ws0.cell(row = i, column = j)
         c_val = c.value
         ls1.append(c_val)
-    # Adding a new key value pair
+    # Position values list
     pos_ls = ls1
 
     ls2 = []
@@ -170,14 +177,12 @@ for j in range (7, mc + 1):
         c = ws1.cell(row = i, column = j)
         c_val = c.value
         ls2.append(c_val)
-    # Adding a new key value pair
+    # PTR-AI values list
     ptrai_ls = ls2
 
-#print(pos_ls)
-#print(ptrai_ls)
-
-##########################################################################################
+#########################################################################################
 # GENERATE SCATTER_PLOT
+#########################################################################################
 import matplotlib.pyplot as plt 
 
 # x-axis values 
