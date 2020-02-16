@@ -18,6 +18,14 @@ Requests
 ```
   pip install requests
 ```
+Numpy
+```
+  pip install numpy
+```
+Openpyxl (for working with excel workbooks)
+```
+pip install openpyxl
+```
 Biopython
 ```
   pip install biopython
