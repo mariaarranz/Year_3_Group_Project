@@ -24,7 +24,7 @@ Numpy
 ```
 Openpyxl (for working with excel workbooks)
 ```
-pip install openpyxl
+ pip install openpyxl
 ```
 Biopython
 ```
@@ -32,9 +32,12 @@ Biopython
 ```
 Matplotlib (for figures)
 ```
-python -m pip install matplotlib
+ python -m pip install matplotlib
 ```
-
+Seaborn
+```
+  pip install seaborn
+```
 ## Warnings :warning:
 This code iterates over a big data file, therefore might take some time to generate. In order to maximize speed, the readme.md files in each folder will intruct which code to only iterate once.
 
