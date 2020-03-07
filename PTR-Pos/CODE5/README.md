@@ -28,35 +28,8 @@ This means that there was a consistent spread accross all tisues, meaning that c
 
 Furthermore, when looking at the [**PTR-AI values of Codon vs Position of Codon Scatter Plot**](Figures/Scatter_plot.png), we can conclude that there are higher PTR-AI values that correlate to the codon at earlier positions, meaning that codons located earlier in the sequence have more of an effect than those later in the sequence.
 
-# Requirements
-Pandas
-```
-  pip install pandas
-```
-Numpy
-```
-  pip install numpy
-```
-Openpyxl (for working with excel workbooks)
-```
-pip install openpyxl
-```
-Biopython
-```
-  pip install biopython
-```
-Matplotlib (for figures)
-```
-python -m pip install matplotlib
-```
-
 # Warnings
 I suggest running the [**PTR.py**:](PTR.py) code first in order to generate the *'PTRdata.xlsx'* file and be able to use it in the second code, [**CPosition.py**:](CPosition.py).
 
 The codes take a bit to generate the excel workbooks, however once they are generated once, you may comment the code to only produce the figures. However, the code as a whole does not take more than 3 min to completely run through so it is not necessary to comment out the code.
 
-# References
-Eraslan, B., Wang, D., Gusic, M., Prokisch, H., Hallström, B. M., Uhlen, M., Asplund, A., Pontén, F., Wieland, T., Hopf, T., Hahne, H., Kuster, B. & Gagneur, J. (2019) Quantification and discovery of sequence determinants of protein-per-mRNA amount in 29 human tissues. Molecular Systems Biology. 15 (2), Available from: https://www.embopress.org/doi/abs/10.15252/msb.20188513.
-
-# Author 
-Maria Arranz Fombellida
