@@ -1,3 +1,4 @@
+
 ############################################################################################
 # CALCULATE FREQUENCIES FOR CODONS IN SEQUENCES
 ############################################################################################
@@ -87,7 +88,7 @@ for i in range(len(gene_ids)):
 
 df_merge_col = pd.merge(df, output, left_index=True, right_index=True)# use merge method, not join to add with respect to rows
 df_merge_col.to_excel('PTRdata.xlsx',index=False)#use this method to save to csv, traditinal format, better than excel
-
+'''
 #############################################################################################################
 #ADD PTR-AI SHEET TO EXCEL FILE
 #############################################################################################################

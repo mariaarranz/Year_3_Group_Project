@@ -1,4 +1,3 @@
-# CODE FOR POSITION CODON vs PTR-AI VALUE
 
 ############################################################################################
 # CALCULATE THE POSITION OF THE SPECIFIED CODON IN THE SEQUENCES
@@ -6,7 +5,7 @@
 
 #import relevant libraries
 import pandas as pd
-import openpyxl as xl; 
+import openpyxl as xl 
 
 # opening the source excel file 
 wb1 = xl.load_workbook('Table_EV4.xlsx')
@@ -45,7 +44,7 @@ from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 my_seq = "GAUCGAUGGGCUUAUAUAGGAUCGAAAAUCGCA"
 
-aa = 'CGU' # select codon to find data for
+aa = 'AAG' # select codon to find data for
 def CodonPosition (my_seq):
     codons = []
     start = 0
@@ -147,11 +146,11 @@ print(df)
 df = df.drop(columns=['EnsemblGeneID', 'EnsemblTranscriptID', 'EnsemblProteinID', 'Unnamed: 4'])
 print(df)
 
-sns.scatterplot(x="CGU", y="Brain_PTR", data=df)
+sns.scatterplot(x="AAG", y="Brain_PTR", data=df)
 
 plt.rcParams["figure.figsize"] = (30, 8)
-plt.ylabel(("PTR value of Brain_PTR"))
-plt.title('PTR to Codon CGU position', fontsize=12)
+plt.ylabel(("PTR value of Brain Tissue"))
+plt.xlabel(("AAG codon initial position"))
 plt.xticks(rotation=90)
 
 plt.show()
