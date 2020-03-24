@@ -11,10 +11,10 @@ import matplotlib as mpl
 #READ IN DATA
 
 #read in just gene sheet of table EV1 excel file
-EV1data= pd.read_excel(r'/Users/cerysbarclay/Desktop/EV1.xlsx', sheet_name='C. Genes', index_col=0) 
+EV1data= pd.read_excel('Table_EV1.xlsx', sheet_name='C. Genes', index_col=0) 
 
 #read in tACI values for all tissues
-tAIdata = pd.read_excel(r'/Users/cerysbarclay/Desktop/tACI_values.xlsx', index_col=0) 
+tAIdata = pd.read_excel('tACI_values.xlsx', index_col=0) 
 
 #merge both tables to get tACI values for each gene
 merged = pd.concat([EV1data[[ 'Gene name', 'Tissue enriched']], tAIdata], axis=1, join='inner')
