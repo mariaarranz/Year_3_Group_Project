@@ -9,7 +9,7 @@ import matplotlib as mpl
 import time
 
 #READ IN DATA
-data=pd.read_excel(r'/Users/cerysbarclay/Desktop/alltissuestRNAdisplay3.xlsx', sheet_name='plain table', index_col=0) 
+data=pd.read_excel('GOtACIdata.xlsx', sheet_name='plain table', index_col=0) 
 
 #create new dataframe to store data for plotting
 colon=data[['% of colon genes', '%  of brain genes']]
