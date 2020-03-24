@@ -53,10 +53,6 @@ Openpyxl (for working with excel workbooks)
 ```
   pip install openpyxl
 ```
-Biopython
-```
-  pip install biopython
-```
 Matplotlib (for figures)
 ```
   python -m pip install matplotlib
