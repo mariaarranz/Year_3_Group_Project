@@ -10,6 +10,9 @@ v2: Manually include initiator Met and SeC tRNAs (need to differentiate from nor
 tAI_obj.py: define a tAI object to calculate the tACI of gene sequences given a tRNA pool. 
 calculatetACIallgenes.py: calculate tACI for all the gene sequences contained in Table EV4 from Eraslan et al (2019). Repeat calculation of tACI for gene CDS with the reading frame shifted by 1 or 2 nucleotides for altering codon usage. Carry out hypothesis testing on tACi values obtained to test for bias in method.
 
+No real need to run the first files if have already run them or have access to previous outputs. Often I have included a commented line for re-uploading data from output file either at the beginning or at the end of the scritpt (depending on if the script also performs some other analysis function). Re-uploading previous data greatly decreases running time if only the analysis functionalities are needed.
+You are encouraged to comment/uncomment various parts of the code to test their effects!
+
 # Requirements
 Python 3 or above.
 Python libraries:
@@ -20,7 +23,7 @@ Files:
 - Normal_Tissues_Only.xlsx: file containing tRNA probe measurements and tRNA gene correponding to each probe for normal tissue samples from the brain, bladder, prostate, B cells and colon.
 
 #### B) tACI
-- Table_EV4_excel.xlsx : supplementary data from Eraslan et al (2019), saved to an Excel format for easier manipulation. Contains the gene name, Ensemble IDs, genomic and protein sequences for 11,575 genes.
+- Table_EV4.xlsx : supplementary data from Eraslan et al (2019), saved to an Excel format for easier manipulation. Contains the gene name, Ensemble IDs, genomic and protein sequences for 11,575 genes. (in folder "Excel_Files" when last checked)
 
 # Warnings
 
