@@ -1,5 +1,5 @@
 # Code Function
-Generate box plots.
+Group genes by enrichment, assign GO terms, find mean tACI for each term and plot values
 
 # Requirements
 
