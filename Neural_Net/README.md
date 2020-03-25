@@ -4,10 +4,5 @@ This code is for the implementation of the NN, and was based a lot on the regres
 # Requirements
 tenserflow, pandas, and all previously used packages.
 
-# Warnings
-
-
-# References
-
 # Authors 
 Ruben Weitzman
