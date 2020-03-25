@@ -1,33 +1,31 @@
 # Code Function
-
-**GOscatter.py:**  
-
-
-**GOtACI_all_tissues.py:** 
-
-
-## Background Knowledge and Equations
-
+Extract coding sequence from gene ID and create excel file containing codon table, RSCU and CAI values.
 
 # Requirements
 Pandas
 ```
   pip install pandas
 ```
-Numpy
+Requests
 ```
-  pip install numpy
+  pip install requests
 ```
-Openpyxl (for working with excel workbooks)
+Biopython
+```
+  pip install biopython
+```
+Openpyxl 
 ```
   pip install openpyxl
 ```
-Matplotlib (for figures)
+Cai
 ```
-  python -m pip install matplotlib
+  pip install CAI
 ```
-# References
 
+# Warnings
+loops through whole table so only use once on college computer!
+Takes time to run! (Run once overnight)
 
 # Authors 
-
+Marianne Buat, Ruben Weitzman, Maria Arranz
