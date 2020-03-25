@@ -5,7 +5,16 @@ There are 2 main parts to this folder:
 v1: Manually Excluded initiator Met and Selenocysteine tRNAs manually from tRNA Excel files.
 v2: Manually include initiator Met and SeC tRNAs (need to differentiate from normal other tRNAs). Further statistical analysis and plotting carried out.
 
-### B) Calculate tACI of genes' coding sequence from
+3 steps for both:
+1. Get anticodon from probe name.
+1. Manually distinguish initator Methionine and atypical Selenocysteine from other tRNAs
+1. Add together abundance of tRNA bearing the same anticodon.
+1. Calculate average tRNA levels in a given tissue and analyse data.
+    1. Look at fold-change in tRNA abundances in each sample compared to average in all tissues.
+    1. Find average tRNA abundance in a tissue and compare again fold-change to other tissues.
+    1. Analyse significance of consistent variations in tRNA levels.
+
+### B) Calculate tACI of genes' coding sequence using tRNA pool measurements in various tissues
 
 tAI_obj.py: define a tAI object to calculate the tACI of gene sequences given a tRNA pool. 
 calculatetACIallgenes.py: calculate tACI for all the gene sequences contained in Table EV4 from Eraslan et al (2019). Repeat calculation of tACI for gene CDS with the reading frame shifted by 1 or 2 nucleotides for altering codon usage. Carry out hypothesis testing on tACi values obtained to test for bias in method.
