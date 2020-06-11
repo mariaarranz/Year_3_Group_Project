@@ -93,10 +93,10 @@ import seaborn as sns
 df = pd.read_excel('CodonPTR.xlsx', sheet_name='Codon Frequencies')
 print(df)
 
-dfTOP = df.sort_values(by ='Brain_PTR', ascending=False).head(int(df.shape[0]*.05)).assign(Location='Top 5%')
+dfTOP = df.sort_values(by ='Brain_PTR', ascending=False).head(int(df.shape[0]*.01)).assign(Location='Top 1%')
 #print(dfTOP)
 
-dfBOT = df.sort_values(by ='Brain_PTR', ascending=True).head(int(df.shape[0]*.05)).assign(Location='Bottom 5%')
+dfBOT = df.sort_values(by ='Brain_PTR', ascending=True).head(int(df.shape[0]*.01)).assign(Location='Bottom 1%')
 #print(dfBOT)
 
 # list(data)
@@ -107,7 +107,7 @@ codons = list(dfheader.columns)
 cdf = pd.concat([dfTOP, dfBOT])
 print(cdf)
 
-cdf.to_excel("Genes_5%.xlsx")  
+cdf.to_excel("Genes_1%.xlsx")  
 
 data = pd.melt(cdf, id_vars=['Location'], value_vars= codons)
 print(data)    

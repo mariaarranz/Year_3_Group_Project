@@ -42,7 +42,25 @@ wb2.save(str('Pos.xlsx'))
 #code for CodonPosition function 
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
-my_seq = "GAUCGAUGGGCUUAUAUAGGAUCGAAAAUCGCA"
+my_seq = "GAUCGAAAGUGGGCUUAUAUAGGAUCGAAAAUCAAG"
+
+# Reference: https://thispointer.com/python-how-to-find-all-indexes-of-an-item-in-a-list/
+def getIndexPositions(listOfElements, element):
+    # Returns the indexes of all occurrences of give element in
+    #the list- listOfElements
+    indexPosList = []
+    indexPos = 0
+    while True:
+        try:
+            # Search for item in list from indexPos to the end of list
+            indexPos = listOfElements.index(element, indexPos)
+            # Add the index position in list
+            indexPosList.append(indexPos)
+            indexPos += 1
+        except ValueError as e:
+            break
+ 
+    return indexPosList
 
 aa = 'AAG' # select codon to find data for
 def CodonPosition (my_seq):
@@ -60,13 +78,13 @@ def CodonPosition (my_seq):
     if aa not in codons:
         pos = '00' #if not in sequence, output '00'
     else:
-        pos = codons.index(aa) #if in sequence, output the position on the list
+        pos = getIndexPositions(codons, aa) #if in sequence, output the position on the list
 
     PosDict = {aa: pos} #create a dictionary for the codon and its positions
-    
+
     return PosDict
 
-#print(CodonPosition(my_seq))
+print(CodonPosition(my_seq))
 
 xls_file = pd.ExcelFile('Pos.xlsx') # Import the excel file and call it xls_file
 df = xls_file.parse() #import into pandas dataframe object  
@@ -146,11 +164,42 @@ print(df)
 df = df.drop(columns=['EnsemblGeneID', 'EnsemblTranscriptID', 'EnsemblProteinID', 'Unnamed: 4'])
 print(df)
 
-sns.scatterplot(x="AAG", y="Brain_PTR", data=df)
+#Reference: https://gist.github.com/jlln/338b4b0b55bd6984f883 
+def splitDataFrameList(df,target_column,separator):
+    ''' df = dataframe to split,
+    target_column = the column containing the values to split
+    separator = the symbol used to perform the split
+    returns: a dataframe with each entry for the target column separated, with each element moved into a new row. 
+    The values in the other columns are duplicated across the newly divided rows.
+    '''
+    def splitListToRows(row,row_accumulator,target_column,separator):
+        split_row = row[target_column].split(separator)
+        for s in split_row:
+            new_row = row.to_dict()
+            new_row[target_column] = s
+            row_accumulator.append(new_row)
+    new_rows = []
+    df.apply(splitListToRows,axis=1,args = (new_rows,target_column,separator))
+    new_df = pd.DataFrame(new_rows)
+    
+    return new_df
+
+ndf = splitDataFrameList(df, 'AAG', ', ')
+ndf['AAG'] = ndf.AAG.str.replace('[','')
+ndf['AAG'] = ndf.AAG.str.replace(']','')
+print(ndf)
+
+ndf["AAG"] = pd.to_numeric(ndf["AAG"])
+dataTypeSeries = ndf.dtypes
+ 
+print('Data type of each column of Dataframe :')
+print(dataTypeSeries)
+
+sns.scatterplot(x="AAG", y="Brain_PTR", data=ndf)
 
 plt.rcParams["figure.figsize"] = (30, 8)
 plt.ylabel(("PTR value of Brain Tissue"))
-plt.xlabel(("AAG codon initial position"))
+plt.xlabel(("AAG codon positions"))
 plt.xticks(rotation=90)
 
 plt.show()

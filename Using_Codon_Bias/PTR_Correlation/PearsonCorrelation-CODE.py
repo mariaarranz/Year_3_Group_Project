@@ -120,7 +120,7 @@ df = pd.read_excel('PearsonCorrelation.xlsx', sheet_name='Codon Frequencies')
 dfY = pd.read_excel('PearsonCorrelation.xlsx', sheet_name='PTR')
 #print(dfY)
 
-dfPTR = dfY['Liver_PTR']
+dfPTR = dfY['Colon_PTR']
 #print(dfPTR)
 
 df['PTR'] = dfPTR

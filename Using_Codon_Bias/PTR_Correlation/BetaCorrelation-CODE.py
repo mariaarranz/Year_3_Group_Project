@@ -1,7 +1,7 @@
 ########################################################################################################
 # Create Workbook and add Codon Frequencies Table
 ###########################################################################################################
-'''
+
 from decimal import Decimal
 import math
 from openpyxl import Workbook
@@ -221,7 +221,7 @@ def getYvalue(r):
         c_valY = cY.value
         h_valY = hY.value
             
-        if (h_valY == 'Liver_PTR'):
+        if (h_valY == 'Colon_PTR'):
             y = c_valY
 
     return y
@@ -274,7 +274,7 @@ for j in range (1, mcX + 1):
 
 wb.save(filename = 'Beta_Correlation.xlsx')
 print("PTR_AI saved")
-'''
+
 ############################################################################################
 ## GENERATE BOXPLOT FROM DATA
 ############################################################################################
@@ -288,7 +288,7 @@ import seaborn as sns
 df = pd.read_excel('Beta_Correlation.xlsx', sheet_name='PTR-AI')
 print(df)
 
-df = df.drop(columns=['UAA', 'UGA','UAG'])
+#df = df.drop(columns=['UAA', 'UGA','UAG'])
 print(df)
 
 # list(data)
