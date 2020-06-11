@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
+import warnings
 
 def uploadFile(input_file, index_col=None, skiprows=None):
     """
@@ -69,6 +70,30 @@ def revcomp(nucstr):
         comp = nucstr.replace('A','t').replace('T','A').replace('C','g').replace('G','C')
         comp=comp.upper()[::-1] #convert to upper case and revert sequence order
         return comp
+    
+def randomSeqGenerator(length, freq = [0.25,0.25,0.25,0.25]):
+    """ Generates a random DNA sequence of the desired length
+    freq is the desired frequency of each nucleotide in the sequence,
+    by default all nucleotides are equivalent. Written in order A, T, C, G
+    """
+    base=['A','T','C','G']
+    DNAseq ="" #initialise empty string
+    #Check frequencies sum to 1
+    #if they don't, normalise vector but issue warning
+    if not np.isclose(sum(freq),1):
+        warnings.warn('Vector of frequency does not sum to 1, function normalised it for use.',
+                      RuntimeWarning)
+        raise ValueError
+        freq=[f/sum(freq) for f in freq]
+    for pos in range(length):
+        r = np.random.uniform()
+        lim=0
+        for n in range(len(base)):
+            lim+=freq[n]
+            if r<lim:
+                DNAseq+=base[n] #add chosen base to string
+                break
+    return(DNAseq)   
 
 def heatmap2d(arr: np.ndarray, colourscale='coolwarm'):
     #MAke a heatmap from a numpy array
