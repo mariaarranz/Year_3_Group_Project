@@ -12,7 +12,9 @@ import numpy as np
 import scipy.stats as stats
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+import seaborn as sns 
+from mpl_toolkits.mplot3d import Axes3D
 #from usefulfunc import (uploadFile, SumSqEr,SumSqTr, SumSqTot)
 
 # =============================================================================
@@ -82,13 +84,13 @@ ax.set_title('Scree Plot')
 pca_df=pd.DataFrame(pca_data, index=scaled_df.index, columns=labels)
 pca_df=pd.concat([pca_df, enriched[['Tissue enriched']]], axis = 1, join='inner')
 
-pd.plotting.scatter_matrix(pca_df.loc[:, "PC1":"PC6"], diagonal="kde")
+pd.plotting.scatter_matrix(pca_df.loc[:, "PC1":"PC7"], diagonal="kde")
 plt.suptitle("Matrix scatter plot of the first 6 principal components of codon bias for tissue-enriched genes",
              fontsize = 20 )
 plt.tight_layout()
 
 #ax = fig.add_subplot(1,1,1)
-from mpl_toolkits.mplot3d import Axes3D
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.set_xlabel('Principal Component 1', fontsize = 15)
@@ -96,16 +98,17 @@ ax.set_ylabel('Principal Component 2', fontsize = 15)
 ax.set_zlabel('Principal Component 3', fontsize = 15)
 ax.set_title('3 component PCA', fontsize = 20)
 #tissue_selection=['Lymph node', 'Gallbladder','Esophagus']
-tissue_selection=['Brain','Prostate','Colon','Urinary bladder'] #tissues for which have tRNA data in addition to abundance
-#tissue_selection = ['Brain','Testis']#Liver']#,'Heart','Testis','Fallopian tube']
+#tissue_selection=['Brain','Prostate','Colon','Urinary bladder'] #tissues for which have tRNA data in addition to abundance
+tissue_selection = ['Brain','Testis','Liver','Heart','Fallopian tube']
 #tissue_selection = list(np.unique(enriched['Tissue enriched'].values))
+#colors = ['r', 'b', 'g','y','m']
 colors = ['r', 'b', 'g','y','m']
 for tissue, color in zip(tissue_selection,colors):
 #for tissue in tissue_selection:
     indicesToKeep = pca_df['Tissue enriched'] == tissue
     ax.scatter(pca_df.loc[indicesToKeep, 'PC1']
                , pca_df.loc[indicesToKeep, 'PC2']
-               , zs=pca_df.loc[indicesToKeep, 'PC3']
+               #, zs=pca_df.loc[indicesToKeep, 'PC3']
                , c = color
                , s = 10)
 ax.legend(tissue_selection)
@@ -128,7 +131,6 @@ ax2.scatter(pca_df['PC4'][pca_df['Tissue enriched']=='Liver'],
 
 
 ##Investigate codon usage of the blobs on the 3rd PC direction
-import seaborn as sns
 
 posblob_bias = raw_bias.loc[pca_df[pca_df['PC3']>=0].index]
 posblob_bias['PC3 sign']='positive'
@@ -141,6 +143,9 @@ blob_data=pd.melt(blob_bias, id_vars = ['PC3 sign'], value_vars=list(raw_bias.co
 fig,ax=plt.subplots()
 sns.catplot(x="codon", y="codon bias", hue="PC3 sign", kind="box", data=blob_data, ax=ax)
 ax.tick_params(axis='x', labelrotation=90)
+
+
+
 # =============================================================================
 # ANOVA on pronciple component 1
 # =============================================================================
@@ -198,6 +203,31 @@ print("Tissues:", *[tissue+' ' for tissue in tissue_selection if tissue !='Brain
 print(stats.f_oneway(*tissue_data))
 
 
+# =============================================================================
+# Brain seems different from the others, so look at its codon usage
+# =============================================================================
+##Create boxplot for brain's codon usage vs other tissues
+brain_bias=raw_bias[pca_df['Tissue enriched']=='Brain'].copy()
+others_bias=raw_bias[pca_df['Tissue enriched']!='Brain'].copy()
+brain_bias['Tissue']='Brain'
+others_bias['Tissue']='Non-brain'
 
+tissues_bias=pd.concat([brain_bias, others_bias], axis=0)
+tissues_data=pd.melt(tissues_bias, id_vars = ['Tissue'], value_vars=list(raw_bias.columns),
+        var_name='codon', value_name='codon bias')
+fig,ax=plt.subplots()
+sns.catplot(x="codon", y="codon bias", hue="Tissue", kind="box", data=tissues_data, ax=ax)
+ax.tick_params(axis='x', labelrotation=90)
 
+##To compare profile, draw heart's codon usage vs non-brain nor heart genes
+heart_bias=raw_bias[pca_df['Tissue enriched']=='Brain'].copy()
+others_bias= raw_bias[not (pca_df['Tissue enriched']=='Brain' or pca_df['Tissue enriched']=='Heart')].copy()
+heart_bias['Tissue']='Heart'
+others_bias['Tissue']='Non-brain nor heart'
 
+tissues_bias=pd.concat([brain_bias, others_bias], axis=0)
+tissues_data=pd.melt(tissues_bias, id_vars = ['Tissue'], value_vars=list(raw_bias.columns),
+        var_name='codon', value_name='codon bias')
+fig,ax=plt.subplots()
+sns.catplot(x="codon", y="codon bias", hue="Tissue", kind="box", data=tissues_data, ax=ax)
+ax.tick_params(axis='x', labelrotation=90)

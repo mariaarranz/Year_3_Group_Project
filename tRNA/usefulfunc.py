@@ -96,7 +96,7 @@ def randomSeqGenerator(length, freq = [0.25,0.25,0.25,0.25]):
     return(DNAseq)   
 
 def heatmap2d(arr: np.ndarray, colourscale='coolwarm'):
-    #MAke a heatmap from a numpy array
+    #Make a heatmap from a numpy array
     fig,ax=plt.subplots()
     a=ax.imshow(arr, cmap=colourscale)
     fig.colorbar(a,ax=ax)

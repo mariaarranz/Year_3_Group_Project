@@ -112,9 +112,9 @@ all_codons=list(get_all_values(genetic_code)) #list of all possible 64 codons
 ## Note it acts inplace (a.sort() will replace a by a sorted list and return None)
 gencode=genetic_code.copy() #so do not alter original object 
                             #(for compatibility with order in existing objects)
-for i in gencode:
-    gencode[i].sort()
-    print(gencode[i])
+#for i in gencode:
+#    gencode[i].sort()
+#    print(gencode[i])
 all_codons_sorted = list(get_all_values(gencode))
     
 # =============================================================================
