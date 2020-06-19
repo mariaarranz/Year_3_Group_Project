@@ -100,7 +100,7 @@ def heatmap2d(arr: np.ndarray, colourscale='coolwarm'):
     fig,ax=plt.subplots()
     a=ax.imshow(arr, cmap=colourscale)
     fig.colorbar(a,ax=ax)
-    plt.show()
+    #plt.show()
     return fig,ax
 
 

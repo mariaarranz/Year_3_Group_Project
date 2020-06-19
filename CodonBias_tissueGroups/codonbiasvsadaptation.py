@@ -20,8 +20,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from sklearn import preprocessing
-from usefulfunc import (uploadFile, saveToFile, heatmap2d)
-import tAI_obj as t
+#from usefulfunc import (uploadFile, saveToFile, heatmap2d)
+#import tAI_obj as t
 
 # =============================================================================
 # Import data
@@ -29,11 +29,11 @@ import tAI_obj as t
 raw_bias = uploadFile("codon_bias.xlsx", index_col=0)
 
 ## Load tRNA abundance data
-tRNA_brain = uploadFile('tRNA brain av.xlsx', index_col=0)
-tRNA_Bcell = uploadFile('tRNA B cells av.xlsx', index_col=0)
-tRNA_prostate = uploadFile('tRNA prostate av.xlsx', index_col=0)
-tRNA_bladder = uploadFile('tRNA bladder av.xlsx', index_col=0)
-tRNA_colon = uploadFile('tRNA colon av.xlsx', index_col=0)
+#tRNA_brain = uploadFile('tRNA brain av.xlsx', index_col=0)
+#tRNA_Bcell = uploadFile('tRNA B cells av.xlsx', index_col=0)
+#tRNA_prostate = uploadFile('tRNA prostate av.xlsx', index_col=0)
+#tRNA_bladder = uploadFile('tRNA bladder av.xlsx', index_col=0)
+#tRNA_colon = uploadFile('tRNA colon av.xlsx', index_col=0)
 
 ## Create tACI objects to get relative adaptiveness values of codons
 # Reverse complement anticodons in index using indexes in brain data
@@ -75,7 +75,7 @@ taci_colon=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundance
 #enriched=enriched.drop(['Group enriched', 'Tissue enhanced'],axis=1)
 
 scaled_bias = raw_bias.drop(['ATG','TAA','TAG','TGA'],axis='columns', inplace=False) \
-                        .loc[enriched.index,:].values
+                        .loc[enriched.index,:]#.values
 #scaled_data=preprocessing.StandardScaler().fit_transform(scaled_bias) #scaled_bias is a numpy array 
 #scaled_bias=pd.DataFrame(scaled_data, 
 #                       index=raw_bias.loc[enriched.index,:].index, #only keep tissue-enriched genes
@@ -105,7 +105,8 @@ df=pd.DataFrame({'brain bias': brain_bias.mean(), 'bladder bias':bladder_bias.me
               'brain adaptation':taci_brain.weights,'bladder adaptation':taci_bladder.weights,
               'prostate adaptation':taci_prostate.weights,
               'colon adaptation':taci_colon.weights}, 
-               index=taci_brain.weights.index)
+               index=bladder_bias.columns)
+#use df.sort_index() if want to order codons by alphabetical order
 np_adapt=df.loc[:,'brain adaptation':].to_numpy()
 #np_adapt = preprocessing.StandardScaler().fit_transform(np_adapt)
 np_bias=df.loc[:,:'colon bias'].to_numpy()
@@ -131,7 +132,7 @@ heatax[1].set_yticks(y_pos)
 heatax[1].set_yticklabels(df.index)
 #plt.show()
 
-preprocessing.StandardScaler().fit_transform(codon_adapt)
+#preprocessing.StandardScaler().fit_transform(codon_adapt)
 
 # =============================================================================
 # Try to look at correlation between codon bias and relative adaptiveness value?
@@ -148,9 +149,22 @@ for codon in df.index:
     mean_bias = df.loc[codon].iloc[:4].mean()
     mean_adapt = df.loc[codon].iloc[4:].mean()
     xx.loc[codon]=df.loc[codon].iloc[:4]-mean_bias
-    yy.loc[codon]=df.loc[codon].iloc[4:]-mean_adapt
-    xy.loc[codon]=xx.loc[codon]*yy.loc[codon]
+    yy.loc[codon]=df.loc[codon].iloc[4:]-mean_adapt    
+    temp=xx.loc[codon].reset_index(drop=True)*yy.loc[codon].reset_index(drop=True)
+    temp.index=xy.columns
+    xy.loc[codon]=temp
     r[codon]=xy.loc[codon].sum()/np.sqrt((xx.loc[codon]**2).sum()*(yy.loc[codon]**2).sum())
+
+#Is correlation significantly positive?
+#H0: r=0; H1: r>0
+t_stat = r.apply(lambda l: l*np.sqrt(2/(1-l**2)))  #test statistic following t-distibution
+t_2_95=2.920
+t_2_99=6.965
+
+#Rejection interval is t_stat in [t_2_1-a, +oo) for significance level a
+
+significant_95=t_stat>=t_2_95 #True if can reject H0
+significant_99=t_stat>=t_2_99
 
 
 

@@ -22,21 +22,25 @@ import scipy.stats as stats
 from matplotlib import pyplot as plt
 import usefulfunc as uf #file where generic useful functions were defined
 
-#import file with sequence, use gene ID as index
-seq=uf.uploadFile('Table_EV4_excel.xlsx',index_col=1) 
+#Import file with sequence, use gene ID as index
+#seq=uf.uploadFile('Table_EV4_excel.xlsx',index_col=1) 
 
-#Load tRNA abundance data
-tRNA_brain = uf.uploadFile('tRNA brain av.xlsx', index_col=0)
-tRNA_Bcell = uf.uploadFile('tRNA B cells av.xlsx', index_col=0)
-tRNA_prostate = uf.uploadFile('tRNA prostate av.xlsx', index_col=0)
-tRNA_bladder = uf.uploadFile('tRNA bladder av.xlsx', index_col=0)
-tRNA_colon = uf.uploadFile('tRNA colon av.xlsx', index_col=0)
+##Load tRNA abundance data
+#tRNA_brain = uf.uploadFile('tRNA brain av.xlsx', index_col=0)
+#tRNA_Bcell = uf.uploadFile('tRNA B cells av.xlsx', index_col=0)
+#tRNA_prostate = uf.uploadFile('tRNA prostate av.xlsx', index_col=0)
+#tRNA_bladder = uf.uploadFile('tRNA bladder av.xlsx', index_col=0)
+#tRNA_colon = uf.uploadFile('tRNA colon av.xlsx', index_col=0)
 
 
 
 ##If need to reupload file after closing Python
-tACI_values = uf.uploadFile('tACI_values.xlsx', index_col=0) 
-'''
+#tACI_values = uf.uploadFile('tACI_values.xlsx', index_col=0) 
+
+# =============================================================================
+# Calculate tACI values
+# =============================================================================
+
 tACI_values=pd.DataFrame() 
 
 ## Start with brain
@@ -44,12 +48,13 @@ tACI_values=pd.DataFrame()
 acs=list(tRNA_brain.index)
 codons=list() 
 for ac in acs:      
-    #convert anticodon to codon it recognises exactly
-    codons.append(t.tAI.revcomp(ac)) 
-
+  #convert anticodon to codon it recognises exactly
+  codons.append(t.tAI.revcomp(ac)) 
+tRNA_brain["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_brain["average"], index=codons)
+S_tRNA=tRNA_brain.set_index('codons')["average"]
 taci_brain=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
+
     
                                        #keep default values for wobble pairing constrains
 for ID in seq.index:
@@ -64,9 +69,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_Bcell["codons"]=codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_Bcell["average"], index=codons)
+S_tRNA = tRNA_Bcell.set_index("codons")["average"]
 taci_Bcell=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -81,9 +86,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_prostate["codons"]=codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_prostate["average"], index=codons)
+S_tRNA = tRNA_prostate.set_index("codons")["average"]
 taci_prostate=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -98,9 +103,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_bladder["codons"]=codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_bladder["average"], index=codons)
+S_tRNA = tRNA_bladder.set_index("codons")["average"]
 taci_bladder=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -115,9 +120,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_colon["codons"]=codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_colon["average"], index=codons)
+S_tRNA = tRNA_colon.set_index("codons")["average"]
 taci_colon=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -126,9 +131,11 @@ for ID in seq.index:
     tACI_values.loc[ID,'colon taci']=taci_colon.calc(CDS) #add tACI value to dataframe   
 
 #uf.saveToFile(tACI_values, "tACI_values.xlsx")
-'''
 
-## Plotting things
+# =============================================================================
+# ## Plotting things
+# =============================================================================
+
 
 x_pos=np.arange(len(tACI_values))
 f,tax=plt.subplots()
@@ -172,17 +179,18 @@ plt.show()
 ANOVA_taci0=stats.f_oneway(tACI_values['brain taci'],tACI_values['colon taci'],tACI_values['bladder taci'],tACI_values['B cell taci'],tACI_values['prostate taci'])
 eta_taci0=uf.Eta_Squared(ANOVA_taci0[0],k=5,N=len(tACI_values)*5)
 
+
+
 #----------------------------------------------------------------------------#
 ## Repeat tACI calculations but with shifted reading frame
 #----------------------------------------------------------------------------#
 ##If need to reupload file after closing Python
-tACI_shift1 = uf.uploadFile('tACI_shift1.xlsx', index_col=0) 
-tACI_shift2 = uf.uploadFile('tACI_shift2.xlsx', index_col=0) 
+#tACI_shift1 = uf.uploadFile('tACI_shift1.xlsx', index_col=0) 
+#tACI_shift2 = uf.uploadFile('tACI_shift2.xlsx', index_col=0) 
 
-'''
+
 tACI_shift1=pd.DataFrame() 
 tACI_shift2=pd.DataFrame() 
-
 
 ## Start with brain
 # Reverse complement anticodons in index using indexes in brain data
@@ -191,9 +199,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_brain["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_brain["average"], index=codons)
+S_tRNA=tRNA_brain.set_index('codons')["average"]
 taci_brain=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -211,9 +219,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_Bcell["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_Bcell["average"], index=codons)
+S_tRNA=tRNA_Bcell.set_index('codons')["average"]
 taci_Bcell=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -230,9 +238,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_prostate["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_prostate["average"], index=codons)
+S_tRNA=tRNA_prostate.set_index('codons')["average"]
 taci_prostate=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -249,9 +257,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_bladder["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_bladder["average"], index=codons)
+S_tRNA=tRNA_bladder.set_index('codons')["average"]
 taci_bladder=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -267,9 +275,9 @@ codons=list()
 for ac in acs:      
     #convert anticodon to codon it recognises exactly
     codons.append(t.tAI.revcomp(ac)) 
-
+tRNA_colon["codons"]  = codons
 # Get average abundance only by anticodons in Series object
-S_tRNA = pd.Series(tRNA_colon["average"], index=codons)
+S_tRNA=tRNA_colon.set_index('codons')["average"]
 taci_colon=t.tAI(S_tRNA,bacteria=False) #create a tAI object with tRNA abundances to calculate the weights
     
                                        #keep default values for wobble pairing constrains
@@ -280,10 +288,10 @@ for ID in seq.index:
     tACI_shift2.loc[ID,'colon taci']=taci_colon.calc(CDS)
     
 
-
 uf.saveToFile(tACI_shift1, "tACI_shift1.xlsx")
 uf.saveToFile(tACI_shift2, "tACI_shift2.xlsx")
-'''
+
+
 ## Look at some properties of shifted tACI
 #Shifted reading frame by 1 nucleotide
 means1=[tACI_shift1['brain taci'].mean(),
